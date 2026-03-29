@@ -1,5 +1,5 @@
 .DS_Store
-data/row/
+data/
 notebooks/
 __pycache__/
 *.pyc
