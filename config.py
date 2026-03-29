@@ -2,8 +2,9 @@ MODEL_NAME_VANILLA = "bert-base-uncased"
 MODEL_NAME_MATHBERT = "tbs17/MathBERT"
 MODEL_NAME_SBERT = "sentence-transformers/all-MiniLM-L6-v2"
 
-EVAL_QUERIES_PATH = "evaluation/eval_gap_queries_with_hypo_v2.json"
-EVAL_QUERIES_PATH_FOR_HYPO = "evaluation/eval_gap_queries_100_v2.json"
+# 精度を評価するためのクエリと正解問題のセットパス
+EVAL_QUERIES_PATH_HYPO = "data/data_evaluation/data_evaluation_with_hypo/sample_queries_with_hypo.json"
+EVAL_QUERIES_PATH = "data/data_evaluation/data_evaluation/sample_queries.json"
 
 # 問題セット json の場所（必要に応じて変えてください）
 DATASET_GLOB = "dataset_maker/outlet_problems_100/run_20251211-2328/**/*.json"
