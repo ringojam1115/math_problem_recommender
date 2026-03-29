@@ -6,18 +6,16 @@ MODEL_NAME_SBERT = "sentence-transformers/all-MiniLM-L6-v2"
 EVAL_QUERIES_PATH_HYPO = "data/data_evaluation/data_evaluation_with_hypo/sample_queries_with_hypo.json"
 EVAL_QUERIES_PATH = "data/data_evaluation/data_evaluation/sample_queries.json"
 
-# 問題セット json の場所（必要に応じて変えてください）
-DATASET_GLOB = "dataset_maker/outlet_problems_100/run_20251211-2328/**/*.json"
-
-DATASET_DIR = "dataset_maker/outlet_problems_100/run_20251211-2328"
+# 抽出後のデータセットのあるディレクトリ
+DATASET_DIR = "data/outlet_problem_sampler/run_20251211-2328"
 
 # 類似問題を何問返すか
 TOP_K = 5
 
 # 埋め込み保存先
-EMB_PATH_VANILLA = "artifacts/dataset_vanilla_embeddings.json"
-EMB_PATH_MATHBERT_SBERT = "artifacts/dataset_mathbert_sbert_embeddings.json"
-EMB_PATH_SBERT = "artifacts/dataset_sbert_embeddings.json"
+EMB_PATH_VANILLA = "data/embedding_artifacts/dataset_vanilla_embeddings.json"
+EMB_PATH_MATHBERT_SBERT = "data/embedding_artifacts/dataset_mathbert_sbert_embeddings.json"
+EMB_PATH_SBERT = "data/embedding_artifacts/dataset_sbert_embeddings.json"
 
 # Name of the model to use for ChatGPT API.
 CHATGPT_MODEL_NAME = "gpt-5-mini-2025-08-07" 
