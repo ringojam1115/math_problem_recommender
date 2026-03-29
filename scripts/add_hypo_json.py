@@ -3,7 +3,7 @@ from ..src.recommender.generate_hypo_problem import generate_hypothetical_proble
 from config import EVAL_QUERIES_PATH
 
 # 出力先（上書きしたくない場合は別ファイルにする）
-OUTPUT_PATH = "data/data_evaluation/data_evaluation_with_hypo"
+OUTPUT_PATH = "data/data_evaluation/data_evaluation_with_hypo/eval_queries_with_hypo.json"
 
 
 def main():

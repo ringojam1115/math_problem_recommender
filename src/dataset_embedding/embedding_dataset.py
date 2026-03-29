@@ -35,13 +35,19 @@ def load_problems_texts_from_dir(dataset_dir: str) -> tuple[list[str], list[dict
     指定ディレクトリ内の全問題 JSON を読み込み、問題文リストを返す。
 
     Parameters
-    ----------
-    dataset_dir : str
-        問題 JSON ファイルが格納されているディレクトリのパス。
+    str: dataset_dir
+         問題 JSON ファイルが格納されているディレクトリのパ
 
-    Returns
-    -------
-    
+    Returns:
+    tuple: (texts, metadata)
+        texts: list[str]
+            問題文のリスト。metadata と同順で、embedding の対象となる。
+        metadata: list[dict]
+            各問題のメタデータのリスト。texts と同順で、embedding の対象ではないが検索結果表示などで使う。
+             - filename: JSONファイル名(例: "problem_001.json")
+             - level: 問題の難易度（例: "easy", "medium", "hard")
+             - type: 問題の種類（例: "algebra", "geometry")
+             - その他、必要に応じてフィールドを追加可能
     """
     texts: list[str] = []
     metadata: list[dict] = []
@@ -64,13 +70,7 @@ def load_problems_texts_from_dir(dataset_dir: str) -> tuple[list[str], list[dict
 
     return texts, metadata
 
-def embed_dataset(
-    dataset_dir: str,
-    output_path: str,
-    model_type: Literal["vanilla", "sbert", "mathbert_sbert"],
-    pooling: str = "cls", # "cls" or "mean"
-    force_recompute_dataset: bool = False,
-) -> None:
+def embed_dataset(dataset_dir: str, output_path: str, model_type: Literal["vanilla", "sbert", "mathbert_sbert"], pooling: str = "cls", force_recompute_dataset: bool = False) -> None:
     """
     問題データセットをベクトル化して JSON として保存する。
     """
@@ -133,12 +133,7 @@ def embed_dataset(
 
     print(f"[INFO] Saved embeddings to {output_path}")
 
-def embed_in_batches(
-    texts: list[str],
-    batch_size: int,
-    model: Literal["vanilla", "mathbert_sbert"],
-    pooling: str = "cls",  # "cls" or "mean"
-):
+def embed_in_batches(texts: list[str], batch_size: int, model: Literal["vanilla", "mathbert_sbert", "sbert"],pooling: str = "cls") -> np.ndarray:
     all_embeddings = []
 
     for i in range(0, len(texts), batch_size):

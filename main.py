@@ -2,7 +2,7 @@ import argparse
 import json
 import numpy as np
 
-from src.models.bm25_seacher import BM25Searcher
+from src.models.bm25_searcher import BM25Searcher
 from src.dataset_embedding.embedding_dataset import embed_dataset, load_problems_texts_from_dir
 from src.run import run_batch_evaluation_mode, run_single_query_mode
 from config import (
