@@ -57,7 +57,7 @@ def main() -> None:
     texts, metadata = load_problems_texts_from_dir(dataset_dir)
 
     bm25_searcher = None
-    dataset_embs = None
+    dataset_vecs = None
 
     # ===== BM25の場合 =====
     if args.retriever == "bm25":
@@ -88,7 +88,7 @@ def main() -> None:
         with open(emb_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        dataset_embs = np.array(data["embeddings"])
+        dataset_vecs = np.array(data["embeddings"])
         # metadataは load_problems_texts_from_dir のものを使う
         # （embeddingファイル内のmetadataと一致する想定）
         # metadata = data["metadata"]  ← どちらでもOK
@@ -97,7 +97,7 @@ def main() -> None:
     if args.mode == "single":
         run_single_query_mode(
             args=args,
-            dataset_embs=dataset_embs,
+            dataset_vecs=dataset_vecs,
             metadata=metadata,
             pooling=args.pooling,
             bm25_searcher=bm25_searcher,
@@ -105,7 +105,7 @@ def main() -> None:
     elif args.mode == "batch":
         run_batch_evaluation_mode(
             args=args,
-            dataset_embs=dataset_embs,
+            dataset_vecs=dataset_vecs,
             metadata=metadata,
             pooling=args.pooling,
             bm25_searcher=bm25_searcher,

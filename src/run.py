@@ -14,7 +14,7 @@ from config import (
 )
 
 # === 単問検索モードの実行 ===
-def run_single_query_mode(args, dataset_embs, metadata, pooling: str = "cls", bm25_searcher=None):
+def run_single_query_mode(args, dataset_vecs, metadata, pooling: str = "cls", bm25_searcher=None):
     # === 1. ユーザーからの検索文取得 ===
     user_text = get_query()
 
@@ -53,7 +53,7 @@ def run_single_query_mode(args, dataset_embs, metadata, pooling: str = "cls", bm
 
         results = search_top_k(
             query_vec=q_vec,
-            dataset_embs=dataset_embs,
+            dataset_vecs=dataset_vecs,
             metadata=metadata,
             top_k=TOP_K
         )
@@ -66,7 +66,7 @@ def run_single_query_mode(args, dataset_embs, metadata, pooling: str = "cls", bm
 
 
 # === 複数クエリ一括評価モードの実行 ===
-def run_batch_evaluation_mode(args, dataset_embs, metadata, pooling: str = "cls", bm25_searcher=None):
+def run_batch_evaluation_mode(args, dataset_vecs, metadata, pooling: str = "cls", bm25_searcher=None):
     # 1. 評価用クエリ JSON を読み込む
     with open(EVAL_QUERIES_PATH_HYPO, "r", encoding="utf-8") as f:
         eval_queries = json.load(f)
@@ -84,7 +84,7 @@ def run_batch_evaluation_mode(args, dataset_embs, metadata, pooling: str = "cls"
 
         results = evaluate_all_queries(
             eval_queries=eval_queries,
-            dataset_embs=None,
+            dataset_vecs=None,
             metadata=metadata,
             embed_query_fn=None,
             top_k=TOP_K,
@@ -105,7 +105,7 @@ def run_batch_evaluation_mode(args, dataset_embs, metadata, pooling: str = "cls"
 
         results = evaluate_all_queries(
             eval_queries=eval_queries,
-            dataset_embs=dataset_embs,
+            dataset_vecs=dataset_vecs,
             metadata=metadata,
             embed_query_fn=embed_query_fn,
             top_k=TOP_K,

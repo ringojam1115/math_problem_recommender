@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Callable, Any
 import numpy as np
-from similarity_search import search_top_k
+from .similarity_search import search_top_k
 
 
 def compute_dcg(relevance_list):
@@ -29,7 +29,7 @@ def compute_ndcg(relevance_list, num_relevant):
     return dcg / idcg if idcg > 0 else 0
 
 
-def evaluate_all_queries(eval_queries, dataset_embs, metadata, embed_query_fn, top_k=5, use_chatgpt=False, bm25_search_fn: Callable[[str, int], list[dict[str, Any]]] | None = None) -> dict[str, float]:
+def evaluate_all_queries(eval_queries, dataset_vecs, metadata, embed_query_fn, top_k=5, use_chatgpt=False, bm25_search_fn: Callable[[str, int], list[dict[str, Any]]] | None = None) -> dict[str, float]:
     total_precision = 0
     total_recall = 0
     total_ndcg = 0
@@ -38,8 +38,8 @@ def evaluate_all_queries(eval_queries, dataset_embs, metadata, embed_query_fn, t
     if bm25_search_fn is None:
         if embed_query_fn is None:
             raise ValueError("embed_query_fn is required for dense evaluation.")
-        if dataset_embs is None:
-            raise ValueError("dataset_embs is required for dense evaluation.")
+        if dataset_vecs is None:
+            raise ValueError("dataset_vecs is required for dense evaluation.")
 
     for q in eval_queries:
         query_text = q["hypo_query"] if use_chatgpt else q["query"]
@@ -51,7 +51,7 @@ def evaluate_all_queries(eval_queries, dataset_embs, metadata, embed_query_fn, t
             query_vec = embed_query_fn([query_text])[0]
             results = search_top_k(
                 query_vec=query_vec,
-                dataset_embs=dataset_embs,
+                dataset_vecs=dataset_vecs,
                 metadata=metadata,
                 top_k=top_k,
             )
