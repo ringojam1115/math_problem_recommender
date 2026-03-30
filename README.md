@@ -57,7 +57,6 @@ the proposed method achieved **4.9x improvement in Precision** and
 ## Future Work
 
 ### System Improvements
-- **Docker support**: Containerize the application for easier setup and deployment
 - **Unit testing**: Add tests for edge cases and error handling
 - **Web UI**: Build a web interface for query input and result visualization
 - **Prompt optimization**: Improve ChatGPT prompts for higher quality proxy problem generation
@@ -68,7 +67,107 @@ the proposed method achieved **4.9x improvement in Precision** and
 - **Image-based retrieval**: Extend the semantic search approach to image data retrieval, with potential applications in satellite imagery search (e.g., retrieving similar land surface images from geospatial databases)
 - **Large-scale database retrieval**: Apply the retrieval pipeline to structured databases, such as land evaluation records or geospatial metadata, enabling natural language querying of platforms like Tenchijin Compass
 
-## Setup
+## Setup with Docker(Recommended)
+
+> **Note:** This setup guide is intended for **single query mode** only.
+> Batch evaluation mode (for measuring retrieval performance) requires
+> additional configuration and is not covered here.
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) installed
+- [Docker Compose](https://docs.docker.com/compose/install/) installed (v2.x or later)
+
+### 1. Make .env file and set OpenAI API key in it
+
+⚠️ Add `.env` to your `.gitignore` to avoid committing secrets.
+
+### 2. Download the MATH dataset
+
+Download the dataset from Kaggle:
+https://www.kaggle.com/datasets/awsaf49/math-dataset
+
+Place the raw data in the following directory:
+```
+data/raw/math_original/
+```
+
+### 3. Sample problems from the dataset
+
+Run the following script to randomly sample problems from the raw data:
+```bash
+docker compose run math-problem-recommender python scripts/problem_sampler.py data/raw/math_original data/outlet_problem_sampler
+```
+
+Available options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `-n`, `--num_problems` | 100 | Number of problems to sample |
+| `--seed` | 42 | Random seed for reproducibility |
+| `--dry-run` | - | Preview without copying files |
+
+The sampled data will be saved in:
+```
+data/outlet_problem_sampler/<run_timestamp>/
+```
+
+### 4. Set the dataset path in config
+
+Open `config.py` and update `DATASET_DIR` to point to the sampled data:
+```python
+DATASET_DIR = "data/outlet_problem_sampler/<run_timestamp>"
+```
+
+Example:
+```python
+DATASET_DIR = "data/outlet_problem_sampler/run_20251211-2328"
+```
+
+## Usage with Docker(Recommended)
+
+Run `main.py` from the project root:
+```bash
+docker compose run --rm math-problem-recommender [options]
+```
+
+### Options
+
+| Option | Choices | Default | Description |
+|--------|---------|---------|-------------|
+| `--retriever` | `vanilla` `mathbert_sbert` `sbert` `bm25` | `vanilla` | Retrieval method |
+| `--pooling` | `cls` `mean` `max` | `cls` | Pooling method for BERT embeddings |
+| `--use_chatgpt` | - | `False` | Enable HyDE (generate proxy problem via ChatGPT before search) |
+| `--force_recompute_dataset` | - | `False` | Force recompute dataset embeddings even if cache exists |
+| `--mode` | `single` `batch` | `single` | `single`: interactive query / `batch`: evaluation mode |
+
+### Examples
+
+**Basic search (Vanilla BERT):**
+```bash
+docker compose run --rm math-problem-recommender --retriever vanilla --pooling mean
+```
+
+**Proposed method (SBERT + MathBERT + HyDE):**
+```bash
+docker compose run --rm math-problem-recommender --retriever mathbert_sbert --pooling mean --use_chatgpt
+```
+
+**After running, enter your query in the prompt:**
+```
+Enter your query: find a problem about probability distributions
+```
+
+**Results are displayed in the terminal:**
+```
+=== 類似問題候補 ===
+[1] score=0.9485  file=555_precalculus.json
+[2] score=0.9483  file=870_intermediate_algebra.json
+[3] score=0.9470  file=1048_intermediate_algebra.json
+[4] score=0.9465  file=2083_algebra.json
+[5] score=0.9442  file=1499_algebra.json
+```
+
+## Setup with venv
 
 > **Note:** This setup guide is intended for **single query mode** only.
 > Batch evaluation mode (for measuring retrieval performance) requires
@@ -132,7 +231,7 @@ Example:
 DATASET_DIR = "data/outlet_problem_sampler/run_20251211-2328"
 ```
 
-## Usage
+## Usage with venv
 
 Run `main.py` from the project root:
 ```bash
