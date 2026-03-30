@@ -3,6 +3,29 @@
 A semantic search system that retrieves similar math problems 
 from natural language queries, built as a graduation research project.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Key Features](#key-features)
+- [Results](#results)
+- [Future Work](#future-work)
+- [Setup with Docker (Recommended)](#setup-with-dockerrecommended)
+  - [Prerequisites](#prerequisites)
+  - [1. Make .env file and set OpenAI API key in it](#1-make-env-file-and-set-openai-api-key-in-it)
+  - [2. Download the MATH dataset](#2-download-the-math-dataset)
+  - [3. Sample problems from the dataset](#3-sample-problems-from-the-dataset)
+  - [4. Set the dataset path in config](#4-set-the-dataset-path-in-config)
+- [Usage with Docker (Recommended)](#usage-with-dockerrecommended)
+- [Setup with venv](#setup-with-venv)
+  - [1. Create virtual environment](#1-create-virtual-environment)
+  - [2. Install dependencies](#2-install-dependencies)
+  - [3. Set OpenAI API key](#3-set-openai-api-key)
+  - [4. Download the MATH dataset](#4-download-the-math-dataset)
+  - [5. Sample problems from the dataset](#5-sample-problems-from-the-dataset)
+  - [6. Set the dataset path in config](#6-set-the-dataset-path-in-config)
+- [Usage with venv](#usage-with-venv)
+
 ## Overview
 
 When a user inputs a natural language query like  
@@ -23,8 +46,6 @@ the system returns Top-K similar math problems from the MATH dataset
 - **Multi-model comparison**: BM25 / Vanilla BERT / SBERT / MathBERT+SBERT
 - **HyDE implementation**: Converts natural language queries into formal math problems via ChatGPT before embedding
 - **Evaluation metrics**: Precision@K, Recall@K, nDCG@K
-
-## Results
 
 ## Results
 
