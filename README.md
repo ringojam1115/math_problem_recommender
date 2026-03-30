@@ -54,7 +54,19 @@ On the Type-gap condition (queries with large semantic gap from problem text),
 the proposed method achieved **4.9x improvement in Precision** and  
 **4.8x improvement in nDCG** compared to SBERT alone.
 
-## Future
+## Future Work
+
+### System Improvements
+- **Docker support**: Containerize the application for easier setup and deployment
+- **Unit testing**: Add tests for edge cases and error handling
+- **Web UI**: Build a web interface for query input and result visualization
+- **Prompt optimization**: Improve ChatGPT prompts for higher quality proxy problem generation
+- **Embedding method exploration**: Further investigation of optimal BERT model combinations for math problem retrieval
+- **Fine-tuning**: Additional pre-training of BERT models specialized for math problem recommendation
+
+### Extensions to Other Domains
+- **Image-based retrieval**: Extend the semantic search approach to image data retrieval, with potential applications in satellite imagery search (e.g., retrieving similar land surface images from geospatial databases)
+- **Large-scale database retrieval**: Apply the retrieval pipeline to structured databases, such as land evaluation records or geospatial metadata, enabling natural language querying of platforms like Tenchijin Compass
 
 ## Setup
 
@@ -119,8 +131,6 @@ Example:
 ```python
 DATASET_DIR = "data/outlet_problem_sampler/run_20251211-2328"
 ```
-
-## Usage
 
 ## Usage
 
