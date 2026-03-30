@@ -12,7 +12,7 @@ def _cosine_similarities(query_vec: np.ndarray, dataset_vecs: np.ndarray) -> np.
         np.ndarray: query_vec
             A single vector representing the user's query. Shape should be (d,).
         np.ndarray: dataset_vecs
-            A 2D array where each row is a vector representing a problem in the dataset. Shape should be (n, d).
+            A 2D array where each raw is a vector representing a problem in the dataset. Shape should be (n, d).
 
     Returns:
         np.ndarray
@@ -57,7 +57,7 @@ def search_top_k(query_vec: np.ndarray, dataset_vecs: np.ndarray, metadata: list
         np.ndarray: query_vec
             A single vector representing the user's query. Shape should be (d,).
         np.ndarray: dataset_vecs
-            A 2D array where each row is a vector representing a problem in the dataset. Shape should be (n, d).
+            A 2D array where each raw is a vector representing a problem in the dataset. Shape should be (n, d).
         list[dict[str, Any]]: metadata
             A list of metadata dictionaries corresponding to each problem in the dataset. Ex: path, level, type etc.
         int: top_k
