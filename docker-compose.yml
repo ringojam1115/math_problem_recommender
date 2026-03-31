@@ -1,0 +1,11 @@
+services:
+  math-problem-recommender:
+    build: .
+    volumes:
+      - ./data:/app/data
+      # Mount the entire project directory to allow live code changes without rebuilding the image
+      - .:/app
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # give your OpenAI API key in .env file
+    # default arguments
+    command: ["--retriever", "vanilla", "--mode", "single"]
