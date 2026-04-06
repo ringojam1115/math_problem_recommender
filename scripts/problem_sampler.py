@@ -1,6 +1,5 @@
 """
-rawデータ全てを検索に使用するのはコストが高いので、ランダムに問題を選んでコピーするスクリプト。
-コピー先は dest_dir/run_20251012-1630/ のように、実行日時を含むサブディレクトリを作成してそこにコピーする。
+Randomly select and copy problems from source to destination directory.
 """
 
 import os

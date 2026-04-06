@@ -2,21 +2,21 @@ import json
 from ..src.recommender.generate_hypo_problem import generate_hypothetical_problem
 from config import EVAL_QUERIES_PATH
 
-# 出力先（上書きしたくない場合は別ファイルにする）
+# output path for the updated JSON with hypo_query
 OUTPUT_PATH = "data/data_evaluation/data_evaluation_with_hypo/eval_queries_with_hypo.json"
 
 
 def main():
-    # 1. 評価用クエリ JSON を読み込む
+    # 1. Load the evaluation queries from the JSON file
     with open(EVAL_QUERIES_PATH, "r", encoding="utf-8") as f:
         eval_queries = json.load(f)
 
     updated = 0
     skipped = 0
 
-    # 2. 各クエリを順番に処理
+    # 2. Load each query and process it
     for q in eval_queries:
-        # すでに hypo_query がある場合はスキップ
+        # Skip if "hypo_query" already exists and is not empty`
         if "hypo_query" in q and q["hypo_query"].strip():
             skipped += 1
             continue
@@ -24,18 +24,18 @@ def main():
         query_id = q.get("query_id", "UNKNOWN")
         print(f"[INFO] Generating hypo_query for query_id={query_id}")
 
-        # 3. ChatGPT で仮問題を生成
+        # 3. Generate the hypothetical problem using the existing query
         hypo = generate_hypothetical_problem(q["query"])
 
-        # 4. JSON に追記
+        # 4. Add the generated hypo_query to the query dictionary
         q["hypo_query"] = hypo
         updated += 1
 
-    # 5. 結果を書き出す
+    # 5. Save the updated evaluation queries back to a new JSON file
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(eval_queries, f, indent=2, ensure_ascii=False)
 
-    # 6. 実行結果サマリ
+    # 6. Print execution summary
     print("================================")
     print(f"Updated : {updated}")
     print(f"Skipped : {skipped}")

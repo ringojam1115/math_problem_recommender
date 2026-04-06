@@ -18,10 +18,10 @@ def parse_args() -> argparse.Namespace:
         description="Math problem semantic search with BERT embeddings."
     )
     parser.add_argument("--use_chatgpt", action="store_true",
-        help="検索文から ChatGPT で仮問題を生成する。")
+        help="Get user query and generate a hypothetical problem with ChatGPT to use as the search query. If not set, use the original user query for search.")
 
     parser.add_argument("--force_recompute_dataset", action="store_true",
-        help="既存の埋め込みがあっても再度ベクトル化を行う。")
+        help="Force re-computation of dataset embeddings even if existing ones are available.")
 
 
     parser.add_argument(
@@ -35,7 +35,7 @@ def parse_args() -> argparse.Namespace:
     "--mode",
     choices=["single", "batch"],
     default="single",
-    help="single: 単問検索 / batch: 評価用複数クエリ"
+    help="single: Single query search / batch: Multiple queries for evaluation"
     )
     
     parser.add_argument(
@@ -53,17 +53,17 @@ def main() -> None:
 
     dataset_dir = DATASET_DIR
 
-    # ✅ まずテキストとmetadataを読む（BM25にも必要）
+    # Load problem texts and metadata from dataset directory
     texts, metadata = load_problems_texts_from_dir(dataset_dir)
 
     bm25_searcher = None
     dataset_vecs = None
 
-    # ===== BM25の場合 =====
+    # ===== BM25 =====
     if args.retriever == "bm25":
         bm25_searcher = BM25Searcher(texts)
 
-    # ===== Denseの場合 =====
+    # ===== Dense =====
     else:
         if args.retriever == "mathbert_sbert":
             emb_path = EMB_PATH_MATHBERT_SBERT
@@ -89,11 +89,8 @@ def main() -> None:
             data = json.load(f)
 
         dataset_vecs = np.array(data["embeddings"])
-        # metadataは load_problems_texts_from_dir のものを使う
-        # （embeddingファイル内のmetadataと一致する想定）
-        # metadata = data["metadata"]  ← どちらでもOK
 
-    # ===== モード別 =====
+    # ===== Mode-specific =====
     if args.mode == "single":
         run_single_query_mode(
             args=args,

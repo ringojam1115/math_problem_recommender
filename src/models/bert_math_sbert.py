@@ -9,7 +9,7 @@ _mathbert_tokenizer = None
 _sbert_model = None
 
 
-def get_models():
+def get_models() -> tuple[AutoModel, AutoTokenizer, SentenceTransformer]:
     global _mathbert_model, _mathbert_tokenizer, _sbert_model
 
     if _mathbert_model is None or _mathbert_tokenizer is None:
@@ -72,7 +72,7 @@ def mathbert_sbert_embed_texts(
     else:
         raise ValueError(f"Invalid pooling method: {pooling}")
 
-    # ✅ normalize for ALL pooling types
+    # Normalize for ALL pooling types
     mathbert_emb = torch.nn.functional.normalize(mathbert_emb, p=2, dim=1)
 
     mathbert_emb = mathbert_emb.cpu().numpy()

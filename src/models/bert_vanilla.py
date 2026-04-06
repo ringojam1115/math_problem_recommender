@@ -22,19 +22,14 @@ def get_model_and_tokenizer():
 
 def vanilla_bert_embed_texts(texts: list[str], pooling: str = "cls",) -> np.ndarray:
     """
-    Vanilla BERT を使ってテキスト群をベクトル化する。
+    Embed the list of texts using the vanilla BERT model.
 
-    Parameters
-    ----------
-    texts : list[str]
-        ベクトル化したいテキストのリスト。
-    pooling : str, optional
-        プーリング方法。"cls", "mean", または "max"。デフォルトは "cls"。
-
-    Returns
-    -------
-    np.ndarray
-        ベクトル化結果。shape = (N, D)
+    Parameters:
+        texts (list[str]): The list of texts to embed.
+        pooling (str): The pooling method to use. Options are "cls", "mean", or "max". Default is "cls".
+    
+    Returns:
+        np.ndarray: The embedded texts as a numpy array.
     """
     model, tokenizer = get_model_and_tokenizer()
 
@@ -69,7 +64,7 @@ def vanilla_bert_embed_texts(texts: list[str], pooling: str = "cls",) -> np.ndar
     else:
         raise ValueError(f"Invalid pooling method: {pooling}")
     
-    # ✅ normalize for ALL pooling types
+    # Normalize for ALL pooling types
     embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
 
     return embeddings.cpu().numpy()
