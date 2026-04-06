@@ -28,15 +28,12 @@ def mathbert_sbert_embed_texts(
     pooling: str = "cls",  # "cls", "mean", or "max"
 ) -> np.ndarray:
     """
-    MathBERT + Sentence-BERT を併用してテキスト群をベクトル化する。
-
-    - MathBERT: 数式・数学表現の局所的意味
-    - SBERT   : 文全体の意味
-
-    Returns
-    -------
-    np.ndarray
-        shape = (N, D_mathbert + D_sbert)
+    Embed the list of texts using a combination of MathBERT and SBERT.
+    Parameters:
+        texts (list[str]): The list of texts to embed.
+        pooling (str): The pooling method to use for MathBERT. Options are "cls", "mean", or "max". Default is "cls".
+    Returns:
+        np.ndarray: The embedded texts as a numpy array.
     """
     mathbert_model, mathbert_tokenizer, sbert_model = get_models()
 

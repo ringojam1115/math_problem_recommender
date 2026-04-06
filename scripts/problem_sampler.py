@@ -112,11 +112,11 @@ def copy_files(selected_files, dest_dir, dry_run):
         if dry_run:
             print(f"[Dry Run] Would copy {file} to {dest_dir}")
         else:
-            # 新しいサブディレクトリ名を生成（例：run_20251012-1630）
+            # Create a timestamped subdirectory for this run
             timestamp = datetime.now().strftime("%Y%m%d-%H%M")
             sub_dir_name = f"run_{timestamp}"
 
-            # dest_dir/ の下に新しいフォルダを作成
+            # Create the subdirectory if it doesn't exist and copy the file there
             run_dir = make_subdirectory(dest_dir, sub_dir_name)
 
             dest_path = os.path.join(run_dir, new_filename)
