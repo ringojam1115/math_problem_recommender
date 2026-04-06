@@ -1,4 +1,8 @@
+import argparse
+import numpy as np
 import json
+
+from .models.bm25_searcher import BM25Searcher
 
 from .recommender.query_cli import get_query
 from .recommender.generate_hypo_problem import generate_hypothetical_problem
@@ -14,7 +18,7 @@ from config import (
 )
 
 # === Execute single query mode ===
-def run_single_query_mode(args, dataset_vecs, metadata, pooling: str = "cls", bm25_searcher=None) -> None:
+def run_single_query_mode(args: argparse.Namespace, dataset_vecs: np.ndarray | None, metadata: list[dict] , pooling: str = "cls", bm25_searcher: BM25Searcher | None = None) -> None:
     """"
     1. Get user query
     2. Whether to generate a hypothetical problem with ChatGPT
@@ -73,7 +77,7 @@ def run_single_query_mode(args, dataset_vecs, metadata, pooling: str = "cls", bm
 
 
 # === Execute batch evaluation mode ===
-def run_batch_evaluation_mode(args, dataset_vecs, metadata, pooling: str = "cls", bm25_searcher=None) -> None:
+def run_batch_evaluation_mode(args: argparse.Namespace, dataset_vecs: np.ndarray | None, metadata: list[dict], pooling: str = "cls", bm25_searcher: BM25Searcher | None = None) -> None:
     """
     1. Load evaluation queries with hypothetical problems from JSON file
     2. For each query, embed it (with or without hypothetical problem) and search for similar problems using the specified retriever (BM25 or dense)

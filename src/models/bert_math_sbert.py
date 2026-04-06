@@ -4,9 +4,9 @@ from transformers import AutoModel, AutoTokenizer
 from sentence_transformers import SentenceTransformer
 from config import MODEL_NAME_SBERT, MODEL_NAME_MATHBERT
 
-_mathbert_model = None
-_mathbert_tokenizer = None
-_sbert_model = None
+_mathbert_model: AutoModel | None = None
+_mathbert_tokenizer: AutoTokenizer | None = None
+_sbert_model: SentenceTransformer | None = None
 
 
 def get_models() -> tuple[AutoModel, AutoTokenizer, SentenceTransformer]:

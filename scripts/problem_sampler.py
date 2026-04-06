@@ -11,7 +11,7 @@ from pathlib import Path
 from tqdm import tqdm
 from datetime import datetime
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """
     Parse command-line arguments for the problem sampling script.
     
@@ -26,7 +26,7 @@ def parse_arguments():
     parser.add_argument("--dry-run", action="store_true", help="Perform a dry run without copying files.")
     return parser.parse_args()
 
-def compute_file_hash(file_path):
+def compute_file_hash(file_path: str) -> str:
     """
     Compute the MD5 hash of a file's content to identify duplicates.
     Parameters:
@@ -40,7 +40,7 @@ def compute_file_hash(file_path):
         hasher.update(buf)
     return hasher.hexdigest()
 
-def collect_json_files(src_root):
+def collect_json_files(src_root: str) -> list[str]:
     """
     Recursively collect all JSON files from the source root directory.
     Parameters:
@@ -55,7 +55,7 @@ def collect_json_files(src_root):
                 json_files.append(os.path.join(root, file))
     return json_files
 
-def select_unique_problems(json_files, num_problems, seed):
+def select_unique_problems(json_files: list[str], num_problems: int, seed: int) -> list[str]:
     """
     Select a specified number of unique problems from the list of JSON files by computing their content hashes.
     Parameters:
@@ -80,7 +80,7 @@ def select_unique_problems(json_files, num_problems, seed):
     selected_files = random.sample(unique_files, num_problems)
     return selected_files
 
-def make_subdirectory(dest_dir, sub_dir_name):
+def make_subdirectory(dest_dir: str, sub_dir_name: str) -> str:
     """
     Create a subdirectory within the destination directory to store copied files.
     Parameters:
@@ -92,7 +92,7 @@ def make_subdirectory(dest_dir, sub_dir_name):
     os.makedirs(sub_dir_path, exist_ok=True)
     return sub_dir_path
 
-def copy_files(selected_files, dest_dir, dry_run):
+def copy_files(selected_files: list[str], dest_dir: str, dry_run: bool) -> list[str]:
     """
     Copy the selected files to the destination directory, organizing them into a timestamped subdirectory. If dry_run is True, only print the actions without copying.
     Parameters:
@@ -127,7 +127,7 @@ def copy_files(selected_files, dest_dir, dry_run):
     return copied_files
 
 
-def main():
+def main() -> None:
     args = parse_arguments()
 
     print(f"Source Directory: {args.src_root}")

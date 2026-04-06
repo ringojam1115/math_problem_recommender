@@ -4,7 +4,7 @@ import numpy as np
 from .similarity_search import search_top_k
 
 
-def compute_dcg(relevance_list) -> float:
+def compute_dcg(relevance_list: list[float]) -> float:
     """
     Calculate DCG (Discounted Cumulative Gain) for a list of relevance scores.
     Return:
@@ -13,7 +13,7 @@ def compute_dcg(relevance_list) -> float:
     return sum(rel / np.log2(i + 2) for i, rel in enumerate(relevance_list))
 
 
-def compute_ndcg(relevance_list, num_relevant) -> float:
+def compute_ndcg(relevance_list: list[float], num_relevant: int) -> float:
     """
     Calculate nDCG (Normalized Discounted Cumulative Gain) for a list of relevance scores.
     Return:
@@ -29,7 +29,7 @@ def compute_ndcg(relevance_list, num_relevant) -> float:
     return dcg / idcg if idcg > 0 else 0
 
 
-def evaluate_all_queries(eval_queries, dataset_vecs, metadata, embed_query_fn, top_k=5, use_chatgpt=False, bm25_search_fn: Callable[[str, int], list[dict[str, Any]]] | None = None) -> dict[str, float]:
+def evaluate_all_queries(eval_queries: list[dict], dataset_vecs: np.ndarray, metadata: list[dict], embed_query_fn: Callable[[list[str]], np.ndarray], top_k: int = 5, use_chatgpt: bool = False, bm25_search_fn: Callable[[str, int], list[dict[str, Any]]] | None = None) -> dict[str, float]:
     total_precision = 0
     total_recall = 0
     total_ndcg = 0

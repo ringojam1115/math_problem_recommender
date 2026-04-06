@@ -3,10 +3,10 @@ from transformers import AutoModel, AutoTokenizer
 import torch
 from config import MODEL_NAME_VANILLA
 
-_model = None
-_tokenizer = None
+_model: AutoModel | None = None
+_tokenizer: AutoTokenizer | None = None
 
-def get_model_and_tokenizer():
+def get_model_and_tokenizer() -> tuple[AutoModel, AutoTokenizer]:
     """
     Load and return the BERT model and tokenizer. Uses global variables to cache them after the first load.
     Returns:
