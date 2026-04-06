@@ -4,7 +4,7 @@ import numpy as np
 from .similarity_search import search_top_k
 
 
-def compute_dcg(relevance_list):
+def compute_dcg(relevance_list: list[float]) -> float:
     """
     Calculate DCG (Discounted Cumulative Gain) for a list of relevance scores.
     Return:
@@ -13,7 +13,7 @@ def compute_dcg(relevance_list):
     return sum(rel / np.log2(i + 2) for i, rel in enumerate(relevance_list))
 
 
-def compute_ndcg(relevance_list, num_relevant):
+def compute_ndcg(relevance_list: list[float], num_relevant: int) -> float:
     """
     Calculate nDCG (Normalized Discounted Cumulative Gain) for a list of relevance scores.
     Return:
@@ -21,7 +21,7 @@ def compute_ndcg(relevance_list, num_relevant):
     """
     dcg = compute_dcg(relevance_list)
 
-    # 理想的な順位での relevance_list を作成
+    # Make the ideal relevance list, which has all relevant items at the top, and compute its DCG for normalization
     ideal_rels = [1] * min(num_relevant, len(relevance_list))
     ideal_rels += [0] * (len(relevance_list) - len(ideal_rels))
     idcg = compute_dcg(ideal_rels)
@@ -29,7 +29,7 @@ def compute_ndcg(relevance_list, num_relevant):
     return dcg / idcg if idcg > 0 else 0
 
 
-def evaluate_all_queries(eval_queries, dataset_vecs, metadata, embed_query_fn, top_k=5, use_chatgpt=False, bm25_search_fn: Callable[[str, int], list[dict[str, Any]]] | None = None) -> dict[str, float]:
+def evaluate_all_queries(eval_queries: list[dict], dataset_vecs: np.ndarray, metadata: list[dict], embed_query_fn: Callable[[list[str]], np.ndarray], top_k: int = 5, use_chatgpt: bool = False, bm25_search_fn: Callable[[str, int], list[dict[str, Any]]] | None = None) -> dict[str, float]:
     total_precision = 0
     total_recall = 0
     total_ndcg = 0
@@ -44,7 +44,7 @@ def evaluate_all_queries(eval_queries, dataset_vecs, metadata, embed_query_fn, t
     for q in eval_queries:
         query_text = q["hypo_query"] if use_chatgpt else q["query"]
 
-        # BM25 を使う場合はそちらで検索し、そうでない場合はベクトル検索を行う --- IGNORE ---
+        # ===== BM25 =====
         if bm25_search_fn is not None:
             results = bm25_search_fn(query_text, top_k)
         else:
@@ -59,16 +59,16 @@ def evaluate_all_queries(eval_queries, dataset_vecs, metadata, embed_query_fn, t
         retrieved_ids = [r["filename"] for r in results]
         relevant_ids = set(q["relevant_problem_ids"])
 
-        # relevance_list は、上位 top_k 件のうち何件が relevant_ids に含まれるかを示す 0/1 のリスト --- IGNORE ---
+        # Calculate relevance list for nDCG --- IGNORE ---
         relevance_list = [1 if rid in relevant_ids else 0 for rid in retrieved_ids]
         overlap_count = sum(relevance_list)
         num_relevant = len(relevant_ids)
 
-        # Precision と Recall を計算 --- IGNORE ---
+        # Calculate Precision@K and Recall@K
         precision = overlap_count / top_k if top_k > 0 else 0
         recall = overlap_count / num_relevant if num_relevant > 0 else 0
 
-        # nDCG を計算 --- IGNORE ---
+        # Calculate nDCG@K
         ndcg = compute_ndcg(relevance_list, num_relevant)
 
         total_precision += precision

@@ -4,12 +4,12 @@ from transformers import AutoModel, AutoTokenizer
 from sentence_transformers import SentenceTransformer
 from config import MODEL_NAME_SBERT, MODEL_NAME_MATHBERT
 
-_mathbert_model = None
-_mathbert_tokenizer = None
-_sbert_model = None
+_mathbert_model: AutoModel | None = None
+_mathbert_tokenizer: AutoTokenizer | None = None
+_sbert_model: SentenceTransformer | None = None
 
 
-def get_models():
+def get_models() -> tuple[AutoModel, AutoTokenizer, SentenceTransformer]:
     global _mathbert_model, _mathbert_tokenizer, _sbert_model
 
     if _mathbert_model is None or _mathbert_tokenizer is None:
@@ -28,15 +28,12 @@ def mathbert_sbert_embed_texts(
     pooling: str = "cls",  # "cls", "mean", or "max"
 ) -> np.ndarray:
     """
-    MathBERT + Sentence-BERT を併用してテキスト群をベクトル化する。
-
-    - MathBERT: 数式・数学表現の局所的意味
-    - SBERT   : 文全体の意味
-
-    Returns
-    -------
-    np.ndarray
-        shape = (N, D_mathbert + D_sbert)
+    Embed the list of texts using a combination of MathBERT and SBERT.
+    Parameters:
+        texts (list[str]): The list of texts to embed.
+        pooling (str): The pooling method to use for MathBERT. Options are "cls", "mean", or "max". Default is "cls".
+    Returns:
+        np.ndarray: The embedded texts as a numpy array.
     """
     mathbert_model, mathbert_tokenizer, sbert_model = get_models()
 
@@ -72,7 +69,7 @@ def mathbert_sbert_embed_texts(
     else:
         raise ValueError(f"Invalid pooling method: {pooling}")
 
-    # ✅ normalize for ALL pooling types
+    # Normalize for ALL pooling types
     mathbert_emb = torch.nn.functional.normalize(mathbert_emb, p=2, dim=1)
 
     mathbert_emb = mathbert_emb.cpu().numpy()

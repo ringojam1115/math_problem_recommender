@@ -1,23 +1,15 @@
 """
 This module contains functions for embedding datasets.
-問題データセットをベクトル化する関数群を含みます。
 
-問題データセットを読み込む
-↓
-全ての問題文をベクトル化する
-↓
-ベクトル化されたデータセットを保存する(JSON形式)
+- Load problem JSON files from a directory (one problem per file)
+- Embed all problem texts
+- Save the embedding results as JSON
+- If existing data is found, skip re-computation
+- If force_recompute_dataset=True, delete existing data and re-compute
 
-- ディレクトリ内の問題 JSON(1問1ファイル)を読み込む
-- 全問題文をベクトル化する
-- ベクトル化結果を JSON として保存する
-- 既存データがあれば再計算をスキップ
-- force_recompute_dataset=True の場合は既存データを削除して再計算
-
-ベクトル化する時のモデルは、defaultからMathBERT+SBERTかを選べます。
-モデルと再計算フラグの選択は main.py から行います。(args.math_bert, args.force_recompute_dataset)
+You can choose between different embedding models when vectorizing: default (vanilla BERT), MathBERT+SBERT, or SBERT.
+The model choice and the force recompute flag are set from main.py (args.math_bert, args.force_recompute_dataset).  
 """
-
 from __future__ import annotations
 
 import os
@@ -32,22 +24,28 @@ from ..models.bert_sbert import sbert_embed_texts
 
 def load_problems_texts_from_dir(dataset_dir: str) -> tuple[list[str], list[dict]]:
     """
-    指定ディレクトリ内の全問題 JSON を読み込み、問題文リストを返す。
+    Return a list of problem texts by loading all problem JSON files in the specified directory.
 
     Parameters
     str: dataset_dir
-         問題 JSON ファイルが格納されているディレクトリのパ
+        Path to the directory containing problem JSON files. Each file should contain a single problem with its metadata.
+        Example JSON structure for each file:
+        {
+            "problem": "text of the math problem",
+            "level": "easy",  # optional
+            "type": "algebra"  # optional
+        }
 
     Returns:
     tuple: (texts, metadata)
         texts: list[str]
-            問題文のリスト。metadata と同順で、embedding の対象となる。
+            List of problem texts. Same order as metadata, used as the target for embedding.
         metadata: list[dict]
-            各問題のメタデータのリスト。texts と同順で、embedding の対象ではないが検索結果表示などで使う。
-             - filename: JSONファイル名(例: "problem_001.json")
-             - level: 問題の難易度（例: "easy", "medium", "hard")
-             - type: 問題の種類（例: "algebra", "geometry")
-             - その他、必要に応じてフィールドを追加可能
+            List of metadata for each problem. Same order as texts, used for display and search results.
+             - filename: JSON file name (e.g., "problem_001.json")
+             - level: Problem difficulty (e.g., "easy", "medium", "hard")
+             - type: Problem type (e.g., "algebra", "geometry")
+             - Other fields can be added as needed
     """
     texts: list[str] = []
     metadata: list[dict] = []
@@ -72,15 +70,24 @@ def load_problems_texts_from_dir(dataset_dir: str) -> tuple[list[str], list[dict
 
 def embed_dataset(dataset_dir: str, output_path: str, model_type: Literal["vanilla", "sbert", "mathbert_sbert"], pooling: str = "cls", force_recompute_dataset: bool = False) -> None:
     """
-    問題データセットをベクトル化して JSON として保存する。
-    """
+    Embed the dataset of problems from the specified directory and save the embeddings to a JSON file.
 
-    # 強制再計算なら既存ファイルを削除
+    Parameters:
+        dataset_dir (str): The directory containing problem JSON files to embed. Each file should contain a single problem with its metadata.
+        output_path (str): The file path where the resulting embeddings and metadata will be saved as JSON.
+        model_type (str): The type of embedding model to use. Options are "vanilla" (default BERT), "mathbert_sbert" (MathBERT + SBERT), or "sbert" (SBERT).
+        pooling (str): The pooling strategy to use for vanilla BERT and MathBERT+SBERT. Options are "cls" (use [CLS] token) or "mean" (average of token embeddings).
+        force_recompute_dataset (bool): If True, existing embedding file at output_path will be deleted and embeddings will be re-computed. If False, existing file will be used if found, and embedding will be skipped.
+
+    Returns:
+        None: The function saves the embeddings and metadata to the specified output_path as JSON.
+    """
+    # Delete existing embedding file if force_recompute_dataset is True
     if force_recompute_dataset and os.path.exists(output_path):
         print(f"[INFO] Removing existing embeddings: {output_path}")
         os.remove(output_path)
 
-    # 既に存在していればスキップ
+    # Skip embedding if output file already exists
     if os.path.exists(output_path):
         print(f"[INFO] Found existing embeddings. Skipping: {output_path}")
         return
@@ -90,7 +97,7 @@ def embed_dataset(dataset_dir: str, output_path: str, model_type: Literal["vanil
 
     print(f"[INFO] Embedding {len(texts)} problems using model={model_type}")
 
-    # モデル選択
+    # Embed the texts using the specified model and pooling strategy
     if model_type == "vanilla":
         embeddings = embed_in_batches(
             texts,
@@ -116,7 +123,7 @@ def embed_dataset(dataset_dir: str, output_path: str, model_type: Literal["vanil
 
     print(f"[INFO] Embedding shape: {embeddings.shape}")
 
-    # 保存
+    # Save
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(
@@ -134,6 +141,9 @@ def embed_dataset(dataset_dir: str, output_path: str, model_type: Literal["vanil
     print(f"[INFO] Saved embeddings to {output_path}")
 
 def embed_in_batches(texts: list[str], batch_size: int, model: Literal["vanilla", "mathbert_sbert", "sbert"],pooling: str = "cls") -> np.ndarray:
+    """
+    Embed the list of texts in batches using the specified model and pooling strategy.
+    """
     all_embeddings = []
 
     for i in range(0, len(texts), batch_size):

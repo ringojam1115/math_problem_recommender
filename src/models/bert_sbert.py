@@ -19,8 +19,14 @@ def sbert_embed_texts(
     normalize: bool = True,
 ) -> np.ndarray:
     """
-    SBERT (off-the-shelf dense baseline) で texts を埋め込み。
-    normalize_embeddings=True にすると cosine=dot が成立して安定。
+    Embed the list of texts using the SBERT model.
+
+    Parameters:
+        texts (list[str]): The list of texts to embed.
+        normalize (bool): Whether to normalize the embeddings.
+
+    Returns:
+        np.ndarray: The embedded texts as a numpy array.
     """
     model = get_sbert_model()
     embs = model.encode(
